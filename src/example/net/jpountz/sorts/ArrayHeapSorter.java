@@ -14,20 +14,24 @@ package net.jpountz.sorts;
  * limitations under the License.
  */
 
-import org.junit.runner.RunWith;
+public class ArrayHeapSorter<T extends java.lang.Comparable<? super T>> extends HeapSorter {
 
-import com.carrotsearch.randomizedtesting.RandomizedRunner;
+  private final T[] arr;
 
-@RunWith(RandomizedRunner.class)
-public class LowMemoryMergeSorterTest extends AbstractSortTest {
-
-  public LowMemoryMergeSorterTest() {
-    super(true);
+  public ArrayHeapSorter(T[] arr) {
+    this.arr = arr;
   }
 
   @Override
-  public Sorter newSorter(Entry[] arr) {
-    return new ArrayLowMemoryMergeSorter<Entry>(arr, randomInt(arr.length + 5));
+  public int compare(int i, int j) {
+    return arr[i].compareTo(arr[j]);
+  }
+
+  @Override
+  public void swap(int i, int j) {
+    final T tmp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = tmp;
   }
 
 }

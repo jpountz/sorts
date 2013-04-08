@@ -19,15 +19,15 @@ import org.junit.runner.RunWith;
 import com.carrotsearch.randomizedtesting.RandomizedRunner;
 
 @RunWith(RandomizedRunner.class)
-public class LowMemoryMergeSorterTest extends AbstractSortTest {
+public class HeapSorterTest extends AbstractSortTest {
 
-  public LowMemoryMergeSorterTest() {
-    super(true);
+  public HeapSorterTest() {
+    super(false);
   }
 
   @Override
   public Sorter newSorter(Entry[] arr) {
-    return new ArrayLowMemoryMergeSorter<Entry>(arr, randomInt(arr.length + 5));
+    return new ArrayHeapSorter<Entry>(arr);
   }
 
 }

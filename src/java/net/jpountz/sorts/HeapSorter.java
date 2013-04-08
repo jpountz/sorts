@@ -14,20 +14,14 @@ package net.jpountz.sorts;
  * limitations under the License.
  */
 
-import org.junit.runner.RunWith;
-
-import com.carrotsearch.randomizedtesting.RandomizedRunner;
-
-@RunWith(RandomizedRunner.class)
-public class LowMemoryMergeSorterTest extends AbstractSortTest {
-
-  public LowMemoryMergeSorterTest() {
-    super(true);
-  }
+/**
+ * A {@link Sorter} implementation based on the heap-sort algorithm.
+ */
+public abstract class HeapSorter extends Sorter {
 
   @Override
-  public Sorter newSorter(Entry[] arr) {
-    return new ArrayLowMemoryMergeSorter<Entry>(arr, randomInt(arr.length + 5));
+  public void sort(int from, int to) {
+    heapSort(from, to);
   }
 
 }

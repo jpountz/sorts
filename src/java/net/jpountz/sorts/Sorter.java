@@ -154,4 +154,46 @@ public abstract class Sorter {
     }
   }
 
+  void heapSort(int from, int to) {
+    heapify(from, to);
+    for (int end = to - 1; end > from; --end) {
+      swap(from, end);
+      siftDown(from, from, end);
+    }
+  }
+
+  void heapify(int from, int to) {
+    for (int i = heapParent(from, to - 1); i >= from; --i) {
+      siftDown(i, from, to);
+    }
+  }
+
+  void siftDown(int i, int from, int to) {
+    for (int leftChild = heapLeftChild(from, i); leftChild < to; leftChild = heapLeftChild(from, i)) {
+      final int rightChild = leftChild + 1;
+      if (compare(i, leftChild) < 0) {
+        if (rightChild < to && compare(leftChild, rightChild) < 0) {
+          swap(i, rightChild);
+          i = rightChild;
+        } else {
+          swap(i, leftChild);
+          i = leftChild;
+        }
+      } else if (rightChild < to && compare(i, rightChild) < 0) {
+        swap(i, rightChild);
+        i = rightChild;
+      } else {
+        break;
+      }
+    }
+  }
+
+  static int heapParent(int from, int i) {
+    return (i - 1  + from) >>> 1;
+  }
+
+  static int heapLeftChild(int from, int i) {
+    return (i << 1) + 1 - from;
+  }
+
 }

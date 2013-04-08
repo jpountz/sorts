@@ -14,8 +14,6 @@ package net.jpountz.sorts;
  * limitations under the License.
  */
 
-import net.jpountz.sorts.ArrayQuickSorter;
-
 import org.junit.runner.RunWith;
 
 import com.carrotsearch.randomizedtesting.RandomizedRunner;

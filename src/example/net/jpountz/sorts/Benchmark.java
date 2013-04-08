@@ -29,6 +29,7 @@ public class Benchmark {
       array[i] = random.nextInt(100);
     }
     final Sorter quickSorter = new ArrayQuickSorter<Integer>(array);
+    final Sorter heapSorter = new ArrayHeapSorter<Integer>(array);
     final Sorter mergeSorter = new ArrayMergeSorter<Integer>(array);
     final Sorter inPlaceMergeSorter = new ArrayInPlaceMergeSorter<Integer>(array);
     final Sorter lowMemMergeSorter = new ArrayLowMemoryMergeSorter<Integer>(array, array.length / 100);
@@ -36,7 +37,11 @@ public class Benchmark {
     long start = System.nanoTime();
     while (System.nanoTime() - start < 10L * 1000 * 1000 * 1000) {
       Collections.shuffle(list);
+      Arrays.sort(array);
+      Collections.shuffle(list);
       quickSorter.sort(from, to);
+      Collections.shuffle(list);
+      heapSorter.sort(from, to);
       Collections.shuffle(list);
       mergeSorter.sort(from, to);
       Collections.shuffle(list);
@@ -53,6 +58,10 @@ public class Benchmark {
       start = System.nanoTime();
       quickSorter.sort(from, to);
       System.out.println("Quicksort: " + (System.nanoTime() - start) / 1000 / 1000 + " ms");
+      Collections.shuffle(list);
+      start = System.nanoTime();
+      heapSorter.sort(from, to);
+      System.out.println("HeapSort: " + (System.nanoTime() - start) / 1000 / 1000 + " ms");
       Collections.shuffle(list);
       start = System.nanoTime();
       mergeSorter.sort(from, to);

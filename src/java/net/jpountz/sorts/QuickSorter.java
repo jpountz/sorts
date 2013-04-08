@@ -14,27 +14,30 @@ package net.jpountz.sorts;
  * limitations under the License.
  */
 
-/** {@link Sorter} implementation using the quicksort algorithm. Small arrays
- *  are sorted using {@link InsertionSorter}. */
+/**
+ * {@link Sorter} implementation based on a variant of the quicksort algorithm
+ * called introsort: when the recursion level exceeds the log of the length of
+ * the array to sort, it falls back to heapsort. This prevents quicksort from
+ * running into its worst-case quadratic runtime. Small arrays are sorted with
+ * {@link InsertionSorter}.
+ */
 public abstract class QuickSorter extends Sorter {
+
+  static int ceilLog2(int n) {
+    return Integer.SIZE - Integer.numberOfLeadingZeros(n - 1);
+  }
 
   @Override
   public final void sort(int from, int to) {
-    quicksort(from, to, (Integer.SIZE - Integer.numberOfLeadingZeros(to - from)) << 1);
-  }
-
-  @Override
-  void mergeSortInPlaceAux(int from, int to) {
-    if (to - from < THRESHOLD) {
-      insertionSort(from, to);
-    } else {
-      mergeSortInPlace(from, to);
-    }
+    quicksort(from, to, ceilLog2(to - from));
   }
 
   void quicksort(int from, int to, int maxDepth) {
-    if (--maxDepth == 0 || to - from < THRESHOLD) {
-      mergeSortInPlace(from, to);
+    if (to - from < THRESHOLD) {
+      insertionSort(from, to);
+      return;
+    } else if (--maxDepth < 0) {
+      heapSort(from, to);
       return;
     }
 
