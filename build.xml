@@ -1,0 +1,259 @@
+<!--
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+
+<project name="sorts" default="dist" basedir="."
+    xmlns:cpptasks="antlib:net.sf.antcontrib.cpptasks"
+    xmlns:ivy="antlib:org.apache.ivy.ant"
+    xmlns:junit4="antlib:com.carrotsearch.junit4"
+    xmlns:mvn="antlib:org.apache.maven.artifact.ant">
+
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
+  <property name="dist"  location="dist"/>
+  <property name="lib" location="lib" />
+
+  <property name="javac.source" value="1.6" />
+  <property name="javac.target" value="1.6" />
+
+  <property name="ivy.jar.version" value="2.2.0"/>
+  <property name="ivy.jar.name" value="ivy-${ivy.jar.version}.jar"/>
+
+  <target name="clean" description="clean working copy">
+    <delete dir="${build}" />
+    <delete dir="${dist}" />
+    <delete dir="${lib}" />
+  </target>
+
+  <target name="ivy-bootstrap" description="install ivy" unless="ivy.available">
+    <condition property="ivy.available">
+      <typefound uri="antlib:org.apache.ivy.ant" name="configure" />
+    </condition>
+    <antcall target="-ivy-install" />
+  </target>
+
+  <target name="-ivy-install" unless="ivy.available">
+    <mkdir dir="${user.home}/.ant/lib" />
+    <get src="http://repo1.maven.org/maven2/org/apache/ivy/ivy/${ivy.jar.version}/${ivy.jar.name}" dest="${user.home}/.ant/lib/${ivy.jar.name}"/>
+  </target>
+
+  <target name="install-maven-ant-tasks" unless="maven-ant-tasks.available">
+    <ivy:cachepath organisation="org.apache.maven" module="maven-ant-tasks" revision="2.1.3"
+      inline="true" conf="default" transitive="true" pathid="maven-ant-tasks.classpath"/>
+    <taskdef uri="antlib:org.apache.maven.artifact.ant" resource="org/apache/maven/artifact/ant/antlib.xml" classpathref="maven-ant-tasks.classpath"/>
+    <property name="maven-ant-tasks.available" value="true"/>
+  </target>
+
+  <target name="install-forbidden-apis" unless="forbidden-apis.available">
+    <ivy:cachepath organisation="de.thetaphi" module="forbiddenapis" revision="1.0"
+      inline="true" conf="default" transitive="true" pathid="forbidden-apis.classpath"/>
+    <taskdef name="forbidden-apis" classname="de.thetaphi.forbiddenapis.AntTask" classpathref="forbidden-apis.classpath"/>
+    <property name="forbidden-apis.available" value="true"/>
+  </target>
+
+  <target name="init">
+    <tstamp />
+    <ivy:resolve conf="test" />
+    <ivy:retrieve />
+  </target>
+
+  <target name="install-junit4" depends="init" unless="junit4.available">
+    <taskdef uri="antlib:com.carrotsearch.junit4">
+      <classpath>
+        <fileset dir="${lib}" includes="*.jar" />
+      </classpath>
+    </taskdef>
+    <property name="junit4.available" value="true" />
+  </target>
+
+  <target name="compile-java" depends="init">
+    <mkdir dir="${build}/classes" />
+    <javac
+      includeAntRuntime="false"
+      srcdir="${src}/java"
+      source="${javac.source}"
+      target="${javac.target}"
+      encoding="UTF-8"
+      debug="true"
+      destdir="${build}/classes"/>
+  </target>
+
+  <target name="compile-examples" depends="compile-java">
+    <mkdir dir="${build}/example-classes" />
+    <javac
+      includeAntRuntime="false"
+      srcdir="${src}/example"
+      source="${javac.source}"
+      target="${javac.target}"
+      encoding="UTF-8"
+      debug="true"
+      destdir="${build}/example-classes">
+      <classpath>
+        <path location="${build}/classes" />
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="compile" depends="compile-java" />
+
+  <target name="compile-tests" depends="compile,compile-examples">
+    <mkdir dir="${build}/test-classes" />
+    <javac
+      includeAntRuntime="false"
+      srcdir="${src}/test"
+      source="${javac.source}"
+      target="${javac.target}"
+      encoding="UTF-8"
+      debug="true"
+      destdir="${build}/test-classes">
+      <classpath>
+        <path location="${build}/classes" />
+        <path location="${build}/example-classes" />
+        <fileset dir="lib" includes="*.jar" />
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="test" description="run tests" depends="compile-tests, install-junit4">
+    <mkdir dir="${build}/tests" />
+    <junit4:junit4
+      dir="${java.io.tmpdir}"
+      maxmemory="100m"
+      parallelism="auto">
+      <assertions>
+        <enable package="net.jpountz.sorts"/>
+      </assertions>
+      <classpath>
+        <path location="${build}/classes" />
+        <path location="${build}/example-classes" />
+        <path location="${build}/test-classes" />
+        <fileset dir="${lib}" includes="*.jar" />
+      </classpath>
+      <fileset dir="${build}/test-classes/">
+        <include name="**/*Test.class" />
+        <exclude name="**/*$*" />
+        <exclude name="**/Abstract*" />
+      </fileset>
+      <listeners>
+        <junit4:report-text
+          showThrowable="true"
+          showStackTraces="true"
+          showOutputStream="true"
+          showErrorStream="true"
+          showStatusOk="true"
+          showStatusError="true"
+          showStatusFailure="true"
+          showStatusIgnored="true"
+          showSuiteSummary="true"
+          useSimpleNames="true"
+          maxClassNameColumns="80"
+          timestamps="true" />
+        <!-- For enkins -->
+        <junit4:report-ant-xml dir="${build}/tests" />
+      </listeners>
+    </junit4:junit4>
+  </target>
+
+  <target name="sources" description="package sources">
+    <mkdir dir="${dist}" />
+    <jar
+      destfile="${dist}/${ivy.module}-${ivy.revision}-sources.jar">
+      <fileset dir="${src}/java" />
+    </jar>
+  </target>
+
+  <target name="docs" description="generate javadocs" depends="init">
+    <mkdir dir="${build}/docs" />
+    <javadoc
+        overview="${src}/java/overview.html"
+        packagenames="net.jpountz.sorts"
+        windowtitle="Sorts API ${ivy.revision}"
+        destDir="${build}/docs">
+      <link href="http://download.oracle.com/javase/6/docs/api/" />
+      <sourcepath>
+        <pathelement location="${src}/java"/>
+      </sourcepath>
+    </javadoc>
+    <mkdir dir="${dist}" />
+    <jar
+      destfile="${dist}/${ivy.module}-${ivy.revision}-javadoc.jar">
+      <fileset dir="${build}/docs" />
+    </jar>
+  </target>
+
+  <target name="jar" description="generate JAR" depends="compile">
+    <mkdir dir="${dist}" />
+    <jar
+      destfile="${dist}/${ivy.module}-${ivy.revision}.jar">
+      <fileset dir="${build}/classes" />
+    </jar>
+  </target>
+
+  <target name="makepom" description="generate a pom file">
+    <ivy:makepom
+        ivyfile="${basedir}/ivy.xml"
+        pomfile="${dist}/${ivy.module}-${ivy.revision}.pom"
+        templatefile="${src}/build/pom.template">
+      <mapping conf="default" scope="compile" />
+      <mapping conf="test" scope="test" />
+    </ivy:makepom>
+  </target>
+
+  <target name="dist" description="package" depends="jar,docs,sources,makepom" />
+
+  <target name="forbidden-apis" description="check API usage" depends="install-forbidden-apis,compile">
+    <forbidden-apis classpathref="forbidden-apis.classpath">
+      <bundledSignatures name="jdk-unsafe-${javac.target}"/>
+      <bundledSignatures name="jdk-deprecated-${javac.target}"/>
+      <fileset dir="${build}/classes" includes="**/*.class" />
+    </forbidden-apis>
+  </target>
+
+  <macrodef name="deploy">
+    <attribute name="repositoryid" />
+    <attribute name="repositoryurl" />
+    <sequential>
+      <mvn:mvn>
+        <arg value="org.apache.maven.plugins:maven-gpg-plugin:1.4:sign-and-deploy-file" />
+        <arg value="-Durl=@{repositoryurl}" />
+        <arg value="-DrepositoryId=@{repositoryid}" />
+        <arg value="-DpomFile=${dist}/${ivy.module}-${ivy.revision}.pom" />
+        <arg value="-Dfile=${dist}/${ivy.module}-${ivy.revision}.jar" />
+        <arg value="-Dfiles=${dist}/${ivy.module}-${ivy.revision}-sources.jar,${dist}/${ivy.module}-${ivy.revision}-javadoc.jar" />
+        <arg value="-Dclassifiers=sources,javadoc" />
+        <arg value="-Dtypes=jar,jar" />
+        <arg value="-Pgpg" />
+      </mvn:mvn>
+    </sequential>
+  </macrodef>
+
+  <target name="deploy" description="deploy snapshot to snapshot repo" depends="install-maven-ant-tasks">
+    <property name="skip.jni" value="true" />
+    <antcall target="-deploy" />
+  </target>
+
+  <target name="-deploy" depends="clean,dist">
+    <deploy repositoryid="sonatype-nexus-snapshots" repositoryurl="https://oss.sonatype.org/content/repositories/snapshots" />
+  </target>
+
+  <!-- before this, update project version from SNAPSHOT to RELEASE -->
+  <target name="stage" description="deploy snapshot to snapshot repo" depends="install-maven-ant-tasks,test,forbidden-apis">
+    <property name="skip.jni" value="true" />
+    <antcall target="-stage" />
+  </target>
+
+  <target name="-stage" depends="clean,dist">
+    <deploy repositoryid="sonatype-nexus-staging" repositoryurl="https://oss.sonatype.org/service/local/staging/deploy/maven2" />
+  </target>
+
+</project>
