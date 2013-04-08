@@ -31,6 +31,7 @@ public abstract class LowMemoryMergeSorter extends AbstractMergeSorter {
 
   @Override
   public final void sort(int from, int to) {
+    checkRange(from, to);
     if (to - from <= maxTempSlots) {
       super.sort(from, to);
     } else {

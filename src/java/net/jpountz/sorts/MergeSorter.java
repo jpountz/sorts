@@ -20,6 +20,7 @@ public abstract class MergeSorter extends AbstractMergeSorter {
 
   @Override
   public final void sort(int from, int to) {
+    checkRange(from, to);
     requireCapacity(to - from);
     super.sort(from, to);
   }

@@ -23,6 +23,7 @@ public abstract class InsertionSorter extends Sorter {
 
   @Override
   public final void sort(int from, int to) {
+    checkRange(from, to);
     insertionSort(from, to);
   }
 

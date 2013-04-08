@@ -21,6 +21,7 @@ public abstract class HeapSorter extends Sorter {
 
   @Override
   public void sort(int from, int to) {
+    checkRange(from, to);
     heapSort(from, to);
   }
 

@@ -21,6 +21,7 @@ public abstract class InPlaceMergeSorter extends Sorter {
 
   @Override
   public final void sort(int from, int to) {
+    checkRange(from, to);
     if (to - from < THRESHOLD) {
       insertionSort(from, to);
     } else {

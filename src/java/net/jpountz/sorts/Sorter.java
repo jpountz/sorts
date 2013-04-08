@@ -33,6 +33,12 @@ public abstract class Sorter {
    *  <code>to</code> (exclusive). */
   public abstract void sort(int from, int to);
 
+  void checkRange(int from, int to) {
+    if (to < from) {
+      throw new IllegalArgumentException("'to' must be >= 'from', got from=" + from + " and to=" + to);
+    }
+  }
+
   void mergeInPlace(int from, int mid, int to) {
     if (from == mid || mid == to || compare(mid - 1, mid) <= 0) {
       return;
@@ -155,6 +161,9 @@ public abstract class Sorter {
   }
 
   void heapSort(int from, int to) {
+    if (to - from <= 1) {
+      return;
+    }
     heapify(from, to);
     for (int end = to - 1; end > from; --end) {
       swap(from, end);

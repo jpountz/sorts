@@ -96,13 +96,31 @@ public abstract class AbstractSortTest extends RandomizedTest {
     public abstract void set(Entry[] arr, int i);
   }
 
-  public void test(Strategy strategy) {
-    final int length = randomInt(20000);
+  public void test(Strategy strategy, int length) {
     final Entry[] arr = new Entry[length];
     for (int i = 0; i < arr.length; ++i) {
       strategy.set(arr, i);
     }
     test(arr);
+  }
+
+  public void test(Strategy strategy) {
+    test(strategy, randomInt(20000));
+  }
+
+  @Test
+  public void testEmpty() {
+    test(new Entry[0]);
+  }
+
+  @Test
+  public void testOne() {
+    test(Strategy.RANDOM, 1);
+  }
+
+  @Test
+  public void testTwo() {
+    test(Strategy.RANDOM_LOW_CARDINALITY, 2);
   }
 
   @Test
