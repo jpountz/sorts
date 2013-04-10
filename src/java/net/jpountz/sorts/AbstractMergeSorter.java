@@ -107,13 +107,13 @@ abstract class AbstractMergeSorter extends Sorter {
   }
 
   /** Save element in slot <code>i</code> in a temporary storage at offset<code>j</code>. */
-  public abstract void save(int i, int j);
+  protected abstract void save(int i, int j);
 
   /** Restore element <code>j</code> from the temporary storage into slot <code>i</code>. */
-  public abstract void restore(int i, int j);
+  protected abstract void restore(int i, int j);
 
   /** Compare elements at offsets <code>i</code> and <code>j</code> in the temporary
    *  storage similarly to {@link #compare(int, int)}. */
-  public abstract int compareSaved(int i, int j);
+  protected abstract int compareSaved(int i, int j);
 
 }

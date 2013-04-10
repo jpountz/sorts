@@ -26,6 +26,6 @@ public abstract class MergeSorter extends AbstractMergeSorter {
   }
 
   /** Make sure that the temporary storage contains at least <code>n</code> entries. */
-  public abstract void requireCapacity(int n);
+  protected abstract void requireCapacity(int n);
 
 }

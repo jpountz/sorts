@@ -14,35 +14,20 @@ package net.jpountz.sorts;
  * limitations under the License.
  */
 
-public class ArrayQuickSorter<T extends java.lang.Comparable<? super T>> extends QuickSorter {
+import org.junit.runner.RunWith;
 
-  private final T[] arr;
-  private T pivot;
-  
-  public ArrayQuickSorter(T[] arr) {
-    this.arr = arr;
+import com.carrotsearch.randomizedtesting.RandomizedRunner;
+
+@RunWith(RandomizedRunner.class)
+public class TimSorterTest extends AbstractSortTest {
+
+  public TimSorterTest() {
+    super(true);
   }
 
   @Override
-  protected int compare(int i, int j) {
-    return arr[i].compareTo(arr[j]);
-  }
-
-  @Override
-  protected void swap(int i, int j) {
-    final T tmp = arr[i];
-    arr[i] = arr[j];
-    arr[j] = tmp;
-  }
-
-  @Override
-  protected void setPivot(int i) {
-    pivot = arr[i];
-  }
-
-  @Override
-  protected int comparePivot(int i) {
-    return pivot.compareTo(arr[i]);
+  public Sorter newSorter(Entry[] arr) {
+    return new ArrayTimSorter<Entry>(arr);
   }
 
 }

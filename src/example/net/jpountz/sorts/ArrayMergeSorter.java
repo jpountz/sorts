@@ -24,34 +24,34 @@ public class ArrayMergeSorter<T extends java.lang.Comparable<? super T>> extends
   }
 
   @Override
-  public int compare(int i, int j) {
+  protected int compare(int i, int j) {
     return arr[i].compareTo(arr[j]);
   }
 
   @Override
-  public void save(int from, int to) {
+  protected void save(int from, int to) {
     savedSlots[to] = arr[from];
   }
 
   @Override
-  public void restore(int i, int slot) {
+  protected void restore(int i, int slot) {
     arr[slot] = savedSlots[i];
   }
 
   @Override
-  public int compareSaved(int i, int j) {
+  protected int compareSaved(int i, int j) {
     return savedSlots[i].compareTo(savedSlots[j]);
   }
 
   @Override
-  public void requireCapacity(int n) {
+  protected void requireCapacity(int n) {
     if (savedSlots == null || savedSlots.length < n) {
       savedSlots = (T[]) new java.lang.Comparable[n];
     }
   }
 
   @Override
-  public void swap(int i, int j) {
+  protected void swap(int i, int j) {
     final T tmp = arr[i];
     arr[i] = arr[j];
     arr[j] = tmp;

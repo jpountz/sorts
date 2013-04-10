@@ -23,12 +23,12 @@ public class ArrayInsertionSorter<T extends java.lang.Comparable<? super T>> ext
   }
 
   @Override
-  public int compare(int i, int j) {
+  protected int compare(int i, int j) {
     return arr[i].compareTo(arr[j]);
   }
 
   @Override
-  public void swap(int i, int j) {
+  protected void swap(int i, int j) {
     final T tmp = arr[i];
     arr[i] = arr[j];
     arr[j] = tmp;

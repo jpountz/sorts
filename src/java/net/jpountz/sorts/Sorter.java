@@ -24,10 +24,10 @@ public abstract class Sorter {
   /** Compare entries found in slots <code>i</code> and <code>j</code>.
    *  The contract for the returned value is the same as
    *  {@link Comparator#compare(Object, Object)}. */
-  public abstract int compare(int i, int j);
+  protected abstract int compare(int i, int j);
 
   /** Swap slots <code>i</code> and <code>j</code>. */
-  public abstract void swap(int i, int j);
+  protected abstract void swap(int i, int j);
 
   /** Sort the slice which starts at <code>from</code> (inclusive) and ends at
    *  <code>to</code> (exclusive). */

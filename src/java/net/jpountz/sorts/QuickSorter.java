@@ -29,6 +29,7 @@ public abstract class QuickSorter extends Sorter {
 
   @Override
   public final void sort(int from, int to) {
+    checkRange(from, to);
     quicksort(from, to, ceilLog2(to - from));
   }
 
@@ -80,8 +81,8 @@ public abstract class QuickSorter extends Sorter {
   }
 
   /** Use the slot at <code>i</code> as a pivot. */
-  public abstract void setPivot(int i);
+  protected abstract void setPivot(int i);
 
   /** Compare the pivot with the slot at <code>i</code>. */
-  public abstract int comparePivot(int i);
+  protected abstract int comparePivot(int i);
 }

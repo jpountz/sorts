@@ -33,6 +33,7 @@ public class Benchmark {
     final Sorter mergeSorter = new ArrayMergeSorter<Integer>(array);
     final Sorter inPlaceMergeSorter = new ArrayInPlaceMergeSorter<Integer>(array);
     final Sorter lowMemMergeSorter = new ArrayLowMemoryMergeSorter<Integer>(array, array.length / 100);
+    final Sorter timSorter = new ArrayTimSorter<Integer>(array);
     final int from = 0, to = array.length;
     long start = System.nanoTime();
     while (System.nanoTime() - start < 10L * 1000 * 1000 * 1000) {
@@ -48,6 +49,8 @@ public class Benchmark {
       inPlaceMergeSorter.sort(from, to);
       Collections.shuffle(list);
       lowMemMergeSorter.sort(from, to);
+      Collections.shuffle(list);
+      timSorter.sort(from, to);
     }
     for (int i = 0; i < 10; ++i) {
       Collections.shuffle(list);
@@ -74,6 +77,10 @@ public class Benchmark {
       start = System.nanoTime();
       lowMemMergeSorter.sort(from, to);
       System.out.println("Low-mem Mergesort: " + (System.nanoTime() - start) / 1000 / 1000 + " ms");
+      Collections.shuffle(list);
+      start = System.nanoTime();
+      timSorter.sort(from, to);
+      System.out.println("Timsort: " + (System.nanoTime() - start) / 1000 / 1000 + " ms");
     }
   }
 
