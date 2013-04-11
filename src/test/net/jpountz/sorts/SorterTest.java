@@ -20,43 +20,46 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.carrotsearch.randomizedtesting.RandomizedRunner;
+import com.carrotsearch.randomizedtesting.RandomizedTest;
 import com.carrotsearch.randomizedtesting.annotations.Repeat;
 
 @RunWith(RandomizedRunner.class)
-public class TimSorterTest extends AbstractSortTest {
-
-  public TimSorterTest() {
-    super(true);
-  }
-
-  @Override
-  public Sorter newSorter(Entry[] arr) {
-    return new ArrayTimSorter<Entry>(arr);
-  }
-
+public class SorterTest extends RandomizedTest {
 
   @Test
   @Repeat(iterations=10)
   public void testLowerUpper() {
     final Integer[] arr = new Integer[randomIntBetween(10, 100)];
-    final int max = randomInt(20);
     for (int i = 0; i < arr.length; ++i) {
-      arr[i] = randomInt(max);
+      arr[i] = randomInt(20);
     }
     Arrays.sort(arr);
-    final TimSorter sorter = new ArrayTimSorter<Integer>(arr);
-    final int savedStart = randomInt(arr.length / 2);
-    final int savedLength = randomIntBetween(1, arr.length - savedStart);
-    sorter.save(savedStart, savedLength);
-    final int savedOff = randomInt(savedLength - 1);
-    final int off = savedStart + savedOff;
+    final Sorter sorter = new ArrayHeapSorter<Integer>(arr);
+    final int off = randomInt(arr.length - 1);
     final int from = randomInt(arr.length / 2);
     final int to = randomIntBetween(arr.length / 2, arr.length);
 
-    assertEquals(sorter.lower(from, to, off), sorter.lowerSaved(from, to, savedOff));
-    assertEquals(sorter.lower(from, to, off), sorter.lowerSaved3(from, to, savedOff));
-    assertEquals(sorter.upper(from, to, off), sorter.upperSaved(from, to, savedOff));
-    assertEquals(sorter.upper(from, to, off), sorter.upperSaved3(from, to, savedOff));
+    int dest = sorter.lower(from, to, off);
+    if (dest > from) {
+      assertTrue(arr[off] > arr[dest - 1]);
+    }
+    if (dest < to) {
+      assertTrue(arr[off] <= arr[dest]);
+    }
+
+    int dest2 = sorter.lower2(from, to, off);
+    assertEquals(dest, dest2);
+
+    dest = sorter.upper(from, to, off);
+    if (dest > from) {
+      assertTrue(arr[off] >= arr[dest - 1]);
+    }
+    if (dest < to) {
+      assertTrue(arr[off] < arr[dest]);
+    }
+
+    dest2 = sorter.upper2(from, to, off);
+    assertEquals(dest, dest2);
   }
 
 }

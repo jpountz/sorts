@@ -101,6 +101,34 @@ public abstract class Sorter {
     return from;
   }
 
+  // faster than lower when val is at the end of [from:to[
+  int lower2(int from, int to, int val) {
+    int f = to - 1, t = to;
+    while (f > from) {
+      if (compare(f, val) < 0) {
+        return lower(f, t, val);
+      }
+      final int delta = t - f;
+      t = f;
+      f -= delta << 1;
+    }
+    return lower(from, t, val);
+  }
+
+  // faster than upper when val is at the beginning of [from:to[
+  int upper2(int from, int to, int val) {
+    int f = from, t = f + 1;
+    while (t < to) {
+      if (compare(t, val) > 0) {
+        return upper(f, t, val);
+      }
+      final int delta = t - f;
+      f = t;
+      t += delta << 1;
+    }
+    return upper(f, to, val);
+  }
+
   void rotate(int lo, int mid, int hi) {
     int lot = lo;
     int hit = mid - 1;
@@ -116,7 +144,6 @@ public abstract class Sorter {
       swap(lot++, hit--);
     }
   }
-
   
   void mergeSortInPlaceAux(int from, int to) {
     sort(from, to);

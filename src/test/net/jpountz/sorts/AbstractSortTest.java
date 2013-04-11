@@ -90,7 +90,15 @@ public abstract class AbstractSortTest extends RandomizedTest {
       public void set(Entry[] arr, int i) {
         arr[i] = i == 0
             ? new Entry(randomInt(5), 0)
-            : new Entry(rarely() ? randomInt(5) : arr[i - 1].value + randomInt(5), i);
+            : new Entry(rarely() ? randomInt(1000) : arr[i - 1].value + randomInt(5), i);
+      }
+    },
+    MOSTLY_ASCENDING {
+      @Override
+      public void set(Entry[] arr, int i) {
+        arr[i] = i == 0
+            ? new Entry(randomInt(5), 0)
+            : new Entry(arr[i - 1].value + randomIntBetween(-8, 10), i);
       }
     };
     public abstract void set(Entry[] arr, int i);

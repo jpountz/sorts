@@ -149,39 +149,39 @@ public abstract class TimSorter extends Sorter {
     if (compare(mid - 1, mid) <= 0) {
       return;
     }
-    if (mid - to <= hi - mid) {
+    lo = upper2(lo, mid, mid);
+    hi = lower2(mid, hi, mid - 1);
+    if (mid - lo <= hi - mid) {
       mergeLo(lo, mid, hi);
     } else {
       mergeHi(lo, mid, hi);
     }
   }
 
-  /** Copy <code>src</code> to <code>dest</code>. */
-  protected void copy(int src, int dest) {
-    // because of the way we use copy, swap is good too
-    swap(src, dest);
-  }
-
-  /** Save elements between slots <code>i</code> and <code>i+len</code>. */
-  protected abstract void save(int i, int len);
-
-  /** Restore element <code>j</code> from the temporary storage into slot <code>i</code>. */
-  protected abstract void restore(int i, int j);
-
-  /** Compare elements at offsets <code>i</code> and <code>j</code> in the temporary
-   *  storage similarly to {@link #compare(int, int)}. */
-  protected abstract int compareSaved(int i, int j);
-
   void mergeLo(int lo, int mid, int hi) {
+    assert compare(lo, mid) > 0;
     final int len1 = mid - lo;
     save(lo, len1);
-    int i = 0, j = mid, dest = lo;
-    for (; i < len1 && j < hi; ++dest) {
-      if (compareSaved(i, j) <= 0) {
-        restore(i++, dest);
-      } else {
+    copy(mid, lo);
+    int i = 0, j = mid + 1, dest = lo + 1;
+    outer: for (;;) {
+      for (int count = 0; count < MIN_GALLOP; ) {
+        if (i >= len1 || j >= hi) {
+          break outer;
+        } else if (compareSaved(i, j) <= 0) {
+          restore(i++, dest++);
+          count = 0;
+        } else {
+          copy(j++, dest++);
+          ++count;
+        }
+      }
+      // galloping...
+      final int next = lowerSaved3(j, hi, i);
+      for (; j < next; ++dest) {
         copy(j++, dest);
       }
+      restore(i++, dest++);
     }
     for (; i < len1; ++dest) {
       restore(i++, dest);
@@ -190,20 +190,92 @@ public abstract class TimSorter extends Sorter {
   }
 
   void mergeHi(int lo, int mid, int hi) {
+    assert compare(mid - 1, hi - 1) > 0;
     final int len2 = hi - mid;
     save(mid, len2);
-    int i = mid - 1, j = len2 - 1, dest = hi - 1;
-    for (; i >= lo && j >= 0; --dest) {
-      if (compareSaved(j, i) >= 0) {
-        restore(j--, dest);
-      } else {
-        copy(i--, dest);
+    copy(mid - 1, hi - 1);
+    int i = mid - 2, j = len2 - 1, dest = hi - 2;
+    outer: for (;;) {
+      for (int count = 0; count < MIN_GALLOP; ) {
+        if (i < lo || j < 0) {
+          break outer;
+        } else if (compareSaved(j, i) >= 0) {
+          restore(j--, dest--);
+          count = 0;
+        } else {
+          copy(i--, dest--);
+          ++count;
+        }
       }
+      // galloping
+      final int next = upperSaved3(lo, i + 1, j);
+      while (i >= next) {
+        copy(i--, dest--);
+      }
+      restore(j--, dest--);
     }
     for (; j >= 0; --dest) {
       restore(j--, dest);
     }
     assert i == dest;
+  }
+
+  int lowerSaved(int from, int to, int val) {
+    int len = to - from;
+    while (len > 0) {
+      final int half = len >>> 1,
+        mid = from + half;
+      if (compareSaved(val, mid) > 0) {
+        from = mid + 1;
+        len = len - half -1;
+      } else {
+        len = half;
+      }
+    }
+    return from;
+  }
+
+  int upperSaved(int from, int to, int val) {
+    int len = to - from;
+    while (len > 0) {
+      final int half = len >>> 1,
+        mid = from + half;
+      if (compareSaved(val, mid) < 0) {
+        len = half;
+      } else {
+        from = mid + 1;
+        len = len - half -1;
+      }
+    }
+    return from;
+  }
+
+  // faster than lowerSaved when val is at the beginning of [from:to[
+  int lowerSaved3(int from, int to, int val) {
+    int f = from, t = f + 1;
+    while (t < to) {
+      if (compareSaved(val, t) <= 0) {
+        return lowerSaved(f, t, val);
+      }
+      final int delta = t - f;
+      f = t;
+      t += delta << 1;
+    }
+    return lowerSaved(f, to, val);
+  }
+
+  //faster than upperSaved when val is at the end of [from:to[
+  int upperSaved3(int from, int to, int val) {
+    int f = to - 1, t = to;
+    while (f > from) {
+      if (compareSaved(val, f) >= 0) {
+        return upperSaved(f, t, val);
+      }
+      final int delta = t - f;
+      t = f;
+      f -= delta << 1;
+    }
+    return upperSaved(from, t, val);
   }
 
   @Override
@@ -220,5 +292,18 @@ public abstract class TimSorter extends Sorter {
     exhaustStack();
     assert runEnd(0) == to;
   }
+
+  /** Copy <code>src</code> to <code>dest</code>. */
+  protected abstract void copy(int src, int dest);
+
+  /** Save elements between slots <code>i</code> and <code>i+len</code>. */
+  protected abstract void save(int i, int len);
+
+  /** Restore element <code>j</code> from the temporary storage into slot <code>i</code>. */
+  protected abstract void restore(int i, int j);
+
+  /** Compare element <code>i</code> from temp storage with element
+   *  <code>j</code> from the slice to sort. */
+  protected abstract int compareSaved(int i, int j);
 
 }
