@@ -16,71 +16,120 @@ package net.jpountz.sorts;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class Benchmark {
 
+  static final Random R = new Random();
+  static Integer[] CACHE = new Integer[1 << 20];
+  static {
+    for (int i = 0; i < CACHE.length; ++i) {
+      CACHE[i] = i;
+    }
+  }
+
+  private static enum Order {
+    RANDOM {
+      @Override
+      void prepare(Integer[] arr) {
+        for (int i = 0; i < arr.length; ++i) {
+          arr[i] = CACHE[R.nextInt(CACHE.length)];
+        }
+      }
+    },
+    RANDOM_LOW_CARDINALITY {
+      @Override
+      void prepare(Integer[] arr) {
+        for (int i = 0; i < arr.length; ++i) {
+          arr[i] = CACHE[R.nextInt(100)];
+        }
+      }
+    },
+    ASCENDING {
+      @Override
+      void prepare(Integer[] arr) {
+        RANDOM.prepare(arr);
+        Arrays.sort(arr);
+      }
+    },
+    STRICTLY_DESCENDING {
+      @Override
+      void prepare(Integer[] arr) {
+        ASCENDING.prepare(arr);
+        Collections.reverse(Arrays.asList(arr));
+      }
+    },
+    MOSTLY_ASCENDING {
+      @Override
+      void prepare(Integer[] arr) {
+        arr[0] = CACHE[R.nextInt(CACHE.length)];
+        for (int i = 1; i < arr.length; ++i) {
+          final int slot = arr[i-1] - 4 + R.nextInt(10);
+          arr[i] = CACHE[slot & (CACHE.length - 1)];
+        }
+      }
+    };
+    abstract void prepare(Integer[] arr);
+  }
+
   public static void main(String[] args) {
-    final Integer[] array = new Integer[5000000];
-    final List<Integer> list = Arrays.asList(array);
+    final Integer[] array = new Integer[2000000];
     final Random random = new Random();
     for (int i = 0; i < array.length; ++i) {
       array[i] = random.nextInt(100);
     }
-    final Sorter quickSorter = new ArrayQuickSorter<Integer>(array);
-    final Sorter heapSorter = new ArrayHeapSorter<Integer>(array);
-    final Sorter mergeSorter = new ArrayMergeSorter<Integer>(array);
-    final Sorter inPlaceMergeSorter = new ArrayInPlaceMergeSorter<Integer>(array);
-    final Sorter lowMemMergeSorter = new ArrayLowMemoryMergeSorter<Integer>(array, array.length / 100);
-    final Sorter timSorter = new ArrayTimSorter<Integer>(array);
-    final int from = 0, to = array.length;
+
+    final Map<String, Sorter> sorters = new LinkedHashMap<String, Sorter>();
+    sorters.put("Arrays.sort", new Sorter() {
+      @Override
+      protected int compare(int i, int j) { throw new UnsupportedOperationException(); }
+      @Override
+      protected void swap(int i, int j) { throw new UnsupportedOperationException(); }
+      @Override
+      public void sort(int from, int to) {
+        if (from == 0 && to == array.length) {
+          Arrays.sort(array);
+        } else {
+          throw new Error();
+        }
+      }
+    });
+    sorters.put("QuickSorter", new ArrayQuickSorter<Integer>(array));
+    sorters.put("HeapSorter", new ArrayHeapSorter<Integer>(array));
+    sorters.put("MergeSorter", new ArrayMergeSorter<Integer>(array));
+    sorters.put("InPlaceMergeSorter", new ArrayInPlaceMergeSorter<Integer>(array));
+    sorters.put("LowMemMergeSorter", new ArrayLowMemoryMergeSorter<Integer>(array, array.length / 100));
+    sorters.put("TimSorter", new ArrayTimSorter<Integer>(array));
+
     long start = System.nanoTime();
+    // JVM warming
     while (System.nanoTime() - start < 10L * 1000 * 1000 * 1000) {
-      Collections.shuffle(list);
-      Arrays.sort(array);
-      Collections.shuffle(list);
-      quickSorter.sort(from, to);
-      Collections.shuffle(list);
-      heapSorter.sort(from, to);
-      Collections.shuffle(list);
-      mergeSorter.sort(from, to);
-      Collections.shuffle(list);
-      inPlaceMergeSorter.sort(from, to);
-      Collections.shuffle(list);
-      lowMemMergeSorter.sort(from, to);
-      Collections.shuffle(list);
-      timSorter.sort(from, to);
+      for (Sorter sorter : sorters.values()) {
+        Order.RANDOM.prepare(array);
+        sorter.sort(0, array.length);
+      }
     }
+    for (Order order : Order.values()) {
+      System.out.print('\t');
+      System.out.print(order);
+    }
+    System.out.println();
     for (int i = 0; i < 10; ++i) {
-      Collections.shuffle(list);
-      start = System.nanoTime();
-      Arrays.sort(array);
-      System.out.println("Arrays.sort: " + (System.nanoTime() - start) / 1000 / 1000 + " ms");
-      Collections.shuffle(list);
-      start = System.nanoTime();
-      quickSorter.sort(from, to);
-      System.out.println("Quicksort: " + (System.nanoTime() - start) / 1000 / 1000 + " ms");
-      Collections.shuffle(list);
-      start = System.nanoTime();
-      heapSorter.sort(from, to);
-      System.out.println("HeapSort: " + (System.nanoTime() - start) / 1000 / 1000 + " ms");
-      Collections.shuffle(list);
-      start = System.nanoTime();
-      mergeSorter.sort(from, to);
-      System.out.println("Mergesort: " + (System.nanoTime() - start) / 1000 / 1000 + " ms");
-      Collections.shuffle(list);
-      start = System.nanoTime();
-      inPlaceMergeSorter.sort(from, to);
-      System.out.println("In-place Mergesort: " + (System.nanoTime() - start) / 1000 / 1000 + " ms");
-      Collections.shuffle(list);
-      start = System.nanoTime();
-      lowMemMergeSorter.sort(from, to);
-      System.out.println("Low-mem Mergesort: " + (System.nanoTime() - start) / 1000 / 1000 + " ms");
-      Collections.shuffle(list);
-      start = System.nanoTime();
-      timSorter.sort(from, to);
-      System.out.println("Timsort: " + (System.nanoTime() - start) / 1000 / 1000 + " ms");
+      for (Map.Entry<String, Sorter> entry : sorters.entrySet()) {
+        final Sorter sorter = entry.getValue();
+        System.out.print(entry.getKey());
+        for (Order order : Order.values()) {
+          order.prepare(array);
+          start = System.nanoTime();
+          sorter.sort(0, array.length);
+          final long time = (System.nanoTime() - start) / 1000 / 1000;
+          System.out.print('\t');
+          System.out.print(time); // ms
+        }
+        System.out.println();
+      }
     }
   }
 
