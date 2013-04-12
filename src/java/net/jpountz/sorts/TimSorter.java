@@ -66,32 +66,35 @@ public abstract class TimSorter extends Sorter {
     if (runBase == to - 1) {
       return 1;
     }
-    int l = 1; // length of the run
+    int o = runBase + 1;
     if (compare(runBase, runBase+1) > 0) {
       // run must be strictly descending
-      while (runBase + l < to && compare(runBase + l - 1, runBase + l) > 0) {
-        ++l;
+      while (o < to && compare(o - 1, o) > 0) {
+        ++o;
       }
-      if (l < minRun && runBase + l < to) {
-        l = Math.min(to - runBase, minRun);
-        binarySort(runBase, runBase + l);
+      if (o - runBase < minRun && o < to) {
+        o = Math.min(to, runBase + minRun);
+        binarySort(runBase, o);
       } else {
-        // revert
-        for (int i = 0, halfL = l >>> 1; i < halfL; ++i) {
-          swap(runBase + i, runBase + l - i - 1);
-        }
+        reverse(runBase, o);
       }
     } else {
       // run must be non-descending
-      while (runBase + l < to && compare(runBase + l - 1, runBase + l) <= 0) {
-        ++l;
+      while (o < to && compare(o - 1, o) <= 0) {
+        ++o;
       }
-      if (l < minRun && runBase + l < to) {
-        l = Math.min(to - runBase, minRun);
-        binarySort(runBase, runBase + l);
+      if (o - runBase < minRun && o < to) {
+        o = Math.min(to, runBase + minRun);
+        binarySort(runBase, o);
       } // else nothing to do, the run is already sorted
     }
-    return l;
+    return o - runBase;
+  }
+
+  void reverse(int from, int to) {
+    while (from < --to) {
+      swap(from++, to);
+    }
   }
 
   void ensureInvariants() {

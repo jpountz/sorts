@@ -181,8 +181,18 @@ public abstract class Sorter {
           l = mid + 1;
         }
       }
-      for (int j = i; j > l; --j) {
-        swap(j - 1, j);
+      switch (i - l) {
+      case 2:
+        swap(l + 1, l + 2);
+      case 1:
+        swap(l, l + 1);
+      case 0:
+        break;
+      default:
+        for (int j = i; j > l; --j) {
+          swap(j - 1, j);
+        }
+        break;
       }
     }
   }
