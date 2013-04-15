@@ -66,34 +66,38 @@ public abstract class TimSorter extends Sorter {
     if (runBase == to - 1) {
       return 1;
     }
-    int o = runBase + 1;
+    int o = runBase + 2;
     if (compare(runBase, runBase+1) > 0) {
       // run must be strictly descending
       while (o < to && compare(o - 1, o) > 0) {
         ++o;
       }
-      if (o - runBase < minRun && o < to) {
+      reverse(runBase, o);
+      /*if (o - runBase < minRun && o < to) {
+        final int i = o;
         o = Math.min(to, runBase + minRun);
-        binarySort(runBase, o);
-      } else {
-        reverse(runBase, o);
-      }
+        binarySort(runBase, o, i);
+      }*/
     } else {
       // run must be non-descending
       while (o < to && compare(o - 1, o) <= 0) {
         ++o;
       }
-      if (o - runBase < minRun && o < to) {
+      /*if (o - runBase < minRun && o < to) {
+        final int i = o;
         o = Math.min(to, runBase + minRun);
-        binarySort(runBase, o);
-      } // else nothing to do, the run is already sorted
+        binarySort(runBase, o, i);
+      }*/ // else nothing to do, the run is already sorted
     }
-    return o - runBase;
+    final int runHi = Math.max(o, Math.min(to, runBase + minRun));
+    binarySort(runBase, runHi, o);
+    return runHi - runBase;
   }
 
   void reverse(int from, int to) {
-    while (from < --to) {
-      swap(from++, to);
+    --to;
+    while (from < to) {
+      swap(from++, to--);
     }
   }
 
@@ -154,7 +158,7 @@ public abstract class TimSorter extends Sorter {
     }
     lo = upper2(lo, mid, mid);
     hi = lower2(mid, hi, mid - 1);
-    if (mid - lo <= hi - mid) {
+    if (mid - lo < hi - mid) {
       mergeLo(lo, mid, hi);
     } else {
       mergeHi(lo, mid, hi);

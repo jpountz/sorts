@@ -169,7 +169,11 @@ public abstract class Sorter {
   }
 
   void binarySort(int from, int to) {
-    for (int i = from + 1; i < to; ++i) {
+    binarySort(from, to, from + 1);
+  }
+
+  void binarySort(int from, int to, int i) {
+    for ( ; i < to; ++i) {
       int l = from;
       int h = i - 1;
       while (l <= h) {
