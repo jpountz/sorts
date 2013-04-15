@@ -21,7 +21,7 @@ package net.jpountz.sorts;
  * running into its worst-case quadratic runtime. Small arrays are sorted with
  * {@link InsertionSorter}.
  */
-public abstract class QuickSorter extends Sorter {
+public abstract class IntroSorter extends Sorter {
 
   static int ceilLog2(int n) {
     return Integer.SIZE - Integer.numberOfLeadingZeros(n - 1);
