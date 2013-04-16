@@ -14,20 +14,16 @@ package net.jpountz.sorts;
  * limitations under the License.
  */
 
-import org.junit.runner.RunWith;
-
-import com.carrotsearch.randomizedtesting.RandomizedRunner;
-
-@RunWith(RandomizedRunner.class)
-public class QuickSorterTest extends AbstractSortTest {
-
-  public QuickSorterTest() {
-    super(false);
-  }
+/**
+ * A {@link Sorter} implementation based on the heap-sort algorithm on a
+ * ternary heap.
+ */
+public abstract class TernaryHeapSorter extends Sorter {
 
   @Override
-  public Sorter newSorter(Entry[] arr) {
-    return new ArrayQuickSorter<Entry>(arr);
+  public void sort(int from, int to) {
+    checkRange(from, to);
+    ternaryHeapSort(from, to);
   }
 
 }

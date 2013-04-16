@@ -129,22 +129,26 @@ public abstract class Sorter {
     return upper(f, to, val);
   }
 
-  void rotate(int lo, int mid, int hi) {
-    int lot = lo;
-    int hit = mid - 1;
-    while (lot < hit) {
-      swap(lot++, hit--);
-    }
-    lot = mid; hit = hi - 1;
-    while (lot < hit) {
-      swap(lot++, hit--);
-    }
-    lot = lo; hit = hi - 1;
-    while (lot < hit) {
-      swap(lot++, hit--);
+  void reverse(int from, int to) {
+    --to;
+    while (from < to) {
+      swap(from++, to--);
     }
   }
-  
+
+  void rotate(int lo, int mid, int hi) {
+    if (mid - lo == hi - mid) {
+      // happens rarely but saves n/2 swaps
+      while (mid < hi) {
+        swap(lo++, mid++);
+      }
+    } else {
+      reverse(lo, mid);
+      reverse(mid, hi);
+      reverse(lo, hi);
+    }
+  }
+
   void mergeSortInPlaceAux(int from, int to) {
     sort(from, to);
   }
@@ -244,6 +248,62 @@ public abstract class Sorter {
 
   static int heapLeftChild(int from, int i) {
     return (i << 1) + 1 - from;
+  }
+
+  void ternaryHeapSort(int from, int to) {
+    if (to - from <= 1) {
+      return;
+    }
+    heapify3(from, to);
+    for (int end = to - 1; end > from; --end) {
+      swap(from, end);
+      siftDown3(from, from, end);
+    }
+  }
+
+  void heapify3(int from, int to) {
+    for (int i = heapParent3(from, to - 1); i >= from; --i) {
+      siftDown3(i, from, to);
+    }
+  }
+
+  void siftDown3(int i, int from, int to) {
+    for (int leftChild = heapLeftChild3(from, i); leftChild < to; leftChild = heapLeftChild3(from, i)) {
+      final int centerChild = leftChild + 1;
+      final int rightChild = centerChild + 1;
+      if (compare(i, leftChild) < 0) {
+        int child = leftChild;
+        if (centerChild < to && compare(child, centerChild) < 0) {
+          child = centerChild;
+        }
+        if (rightChild < to && compare(child, rightChild) < 0) {
+          child = rightChild;
+        }
+        swap(i, child);
+        i = child;
+      } else if (centerChild < to && compare(i, centerChild) < 0) {
+        if (rightChild < to && compare(centerChild, rightChild) < 0) {
+          swap(i, rightChild);
+          i = rightChild;
+        } else {
+          swap(i, centerChild);
+          i = centerChild;
+        }
+      } else if (rightChild < to && compare(i, rightChild) < 0) {
+        swap(i, rightChild);
+        i = rightChild;
+      } else {
+        break;
+      }
+    }
+  }
+
+  static int heapParent3(int from, int i) {
+    return (i - 1  + from) / 3;
+  }
+
+  static int heapLeftChild3(int from, int i) {
+    return i * 3 + 1 - from;
   }
 
 }

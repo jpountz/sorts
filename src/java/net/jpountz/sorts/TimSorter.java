@@ -84,13 +84,6 @@ public abstract class TimSorter extends Sorter {
     return runHi - runBase;
   }
 
-  void reverse(int from, int to) {
-    --to;
-    while (from < to) {
-      swap(from++, to--);
-    }
-  }
-
   void ensureInvariants() {
     while (stackSize > 1) {
       final int runLen0 = runLen(0);

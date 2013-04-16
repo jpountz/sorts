@@ -105,8 +105,9 @@ public class Benchmark {
         }
       }
     });
-    sorters.put("IntroSorter", new ArrayQuickSorter<Integer>(array));
+    sorters.put("IntroSorter", new ArrayIntroSorter<Integer>(array));
     sorters.put("HeapSorter", new ArrayHeapSorter<Integer>(array));
+    sorters.put("TernaryHeapSorter", new ArrayTernaryHeapSorter<Integer>(array));
     sorters.put("MergeSorter", new ArrayMergeSorter<Integer>(array));
     sorters.put("InPlaceMergeSorter", new ArrayInPlaceMergeSorter<Integer>(array));
     sorters.put("LowMemMergeSorter", new ArrayLowMemoryMergeSorter<Integer>(array, array.length / 100));

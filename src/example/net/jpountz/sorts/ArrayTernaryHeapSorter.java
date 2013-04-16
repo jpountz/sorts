@@ -14,12 +14,11 @@ package net.jpountz.sorts;
  * limitations under the License.
  */
 
-public class ArrayQuickSorter<T extends java.lang.Comparable<? super T>> extends IntroSorter {
+public class ArrayTernaryHeapSorter<T extends java.lang.Comparable<? super T>> extends TernaryHeapSorter {
 
   private final T[] arr;
-  private T pivot;
-  
-  public ArrayQuickSorter(T[] arr) {
+
+  public ArrayTernaryHeapSorter(T[] arr) {
     this.arr = arr;
   }
 
@@ -33,16 +32,6 @@ public class ArrayQuickSorter<T extends java.lang.Comparable<? super T>> extends
     final T tmp = arr[i];
     arr[i] = arr[j];
     arr[j] = tmp;
-  }
-
-  @Override
-  protected void setPivot(int i) {
-    pivot = arr[i];
-  }
-
-  @Override
-  protected int comparePivot(int i) {
-    return pivot.compareTo(arr[i]);
   }
 
 }
