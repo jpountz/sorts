@@ -111,6 +111,8 @@ public class Benchmark {
     sorters.put("MergeSorter", new ArrayMergeSorter<Integer>(array));
     sorters.put("InPlaceMergeSorter", new ArrayInPlaceMergeSorter<Integer>(array));
     sorters.put("TimSorter", new ArrayTimSorter<Integer>(array));
+    sorters.put("InPlaceTimSorter", new ArrayInPlaceTimSorter<Integer>(array));
+    sorters.put("LowMemoryTimSorter", new ArrayLowMemoryTimSorter<Integer>(array, array.length / 20));
 
     long start = System.nanoTime();
     // JVM warming

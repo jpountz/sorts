@@ -14,24 +14,17 @@ package net.jpountz.sorts;
  * limitations under the License.
  */
 
-public class ArrayInPlaceMergeSorter<T extends java.lang.Comparable<? super T>> extends InPlaceTimSorter {
+/** Variant of {@link TimSorter} that uses the same techniques to perform well
+ *  on partially-sorted data, but merges in-place and does not gallop.  */
+public abstract class InPlaceTimSorter extends AbstractTimSorter {
 
-  private final T[] arr;
-
-  public ArrayInPlaceMergeSorter(T[] arr) {
-    this.arr = arr;
+  protected InPlaceTimSorter() {
+    super();
   }
 
   @Override
-  protected int compare(int i, int j) {
-    return arr[i].compareTo(arr[j]);
-  }
-
-  @Override
-  protected void swap(int i, int j) {
-    final T tmp = arr[i];
-    arr[i] = arr[j];
-    arr[j] = tmp;
+  void doMerge(int lo, int mid, int hi) {
+    mergeInPlace(lo, mid, hi);
   }
 
 }

@@ -46,7 +46,9 @@ public class ArrayMergeSorter<T extends java.lang.Comparable<? super T>> extends
   @Override
   protected void requireCapacity(int n) {
     if (savedSlots == null || savedSlots.length < n) {
-      savedSlots = (T[]) new java.lang.Comparable[n];
+      @SuppressWarnings("unchecked")
+      final T[] slots = (T[]) new java.lang.Comparable[n];
+      savedSlots = slots;
     }
   }
 

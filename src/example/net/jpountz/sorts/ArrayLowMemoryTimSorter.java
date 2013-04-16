@@ -1,5 +1,6 @@
 package net.jpountz.sorts;
 
+
 /*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +15,18 @@ package net.jpountz.sorts;
  * limitations under the License.
  */
 
-public class ArrayInPlaceMergeSorter<T extends java.lang.Comparable<? super T>> extends InPlaceTimSorter {
+
+public class ArrayLowMemoryTimSorter<T extends java.lang.Comparable<? super T>> extends LowMemoryTimSorter {
 
   private final T[] arr;
+  private T[] tmp;
 
-  public ArrayInPlaceMergeSorter(T[] arr) {
+  public ArrayLowMemoryTimSorter(T[] arr, int maxTempSlots) {
+    super(maxTempSlots);
     this.arr = arr;
+    @SuppressWarnings("unchecked")
+    final T[] tmp = (T[]) new Comparable[maxTempSlots];
+    this.tmp = tmp;
   }
 
   @Override
@@ -34,4 +41,23 @@ public class ArrayInPlaceMergeSorter<T extends java.lang.Comparable<? super T>> 
     arr[j] = tmp;
   }
 
+  @Override
+  protected void copy(int src, int dest) {
+    arr[dest] = arr[src];
+  }
+
+  @Override
+  protected void save(int start, int len) {
+    System.arraycopy(arr, start, tmp, 0, len);
+  }
+
+  @Override
+  protected void restore(int src, int dest) {
+    arr[dest] = tmp[src];
+  }
+
+  @Override
+  protected int compareSaved(int i, int j) {
+    return tmp[i].compareTo(arr[j]);
+  }
 }

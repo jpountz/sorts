@@ -14,24 +14,20 @@ package net.jpountz.sorts;
  * limitations under the License.
  */
 
-public class ArrayInPlaceMergeSorter<T extends java.lang.Comparable<? super T>> extends InPlaceTimSorter {
+import org.junit.runner.RunWith;
 
-  private final T[] arr;
+import com.carrotsearch.randomizedtesting.RandomizedRunner;
 
-  public ArrayInPlaceMergeSorter(T[] arr) {
-    this.arr = arr;
+@RunWith(RandomizedRunner.class)
+public class LowMemoryTimSorterTest extends AbstractSortTest {
+
+  public LowMemoryTimSorterTest() {
+    super(true);
   }
 
   @Override
-  protected int compare(int i, int j) {
-    return arr[i].compareTo(arr[j]);
-  }
-
-  @Override
-  protected void swap(int i, int j) {
-    final T tmp = arr[i];
-    arr[i] = arr[j];
-    arr[j] = tmp;
+  public Sorter newSorter(Entry[] arr) {
+    return new ArrayLowMemoryTimSorter<Entry>(arr, randomInt(arr.length));
   }
 
 }

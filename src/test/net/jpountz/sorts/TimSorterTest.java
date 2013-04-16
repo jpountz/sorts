@@ -34,7 +34,6 @@ public class TimSorterTest extends AbstractSortTest {
     return new ArrayTimSorter<Entry>(arr);
   }
 
-
   @Test
   @Repeat(iterations=10)
   public void testLowerUpper() {
