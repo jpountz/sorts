@@ -54,6 +54,20 @@ public class Benchmark {
         Arrays.sort(arr);
       }
     },
+    ASCENDING_SEQUENCES {
+      @Override
+      void prepare(Integer[] arr) {
+        arr[0] = CACHE[R.nextInt(100)];
+        for (int i = 1; i < arr.length; ++i) {
+          if (R.nextInt(200) == 0) {
+            arr[i] = CACHE[R.nextInt(100)];
+          } else {
+            final int slot = arr[i-1] + R.nextInt(100);
+            arr[i] = CACHE[slot & (CACHE.length - 1)];
+          }
+        }
+      }
+    },
     MOSTLY_ASCENDING {
       @Override
       void prepare(Integer[] arr) {
