@@ -14,7 +14,7 @@ package net.jpountz.sorts;
  * limitations under the License.
  */
 
-public class ArrayQuickSorter<T extends java.lang.Comparable<? super T>> extends QuickSorter {
+public class ArrayQuickSorter<T extends java.lang.Comparable<? super T>> extends IntroSorter {
 
   private final T[] arr;
   private T pivot;

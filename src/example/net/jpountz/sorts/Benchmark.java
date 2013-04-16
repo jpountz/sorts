@@ -23,7 +23,7 @@ import java.util.Random;
 public class Benchmark {
 
   static final Random R = new Random();
-  static Integer[] CACHE = new Integer[1 << 20];
+  static Integer[] CACHE = new Integer[1 << 24];
   static {
     for (int i = 0; i < CACHE.length; ++i) {
       CACHE[i] = i;
@@ -54,13 +54,6 @@ public class Benchmark {
         Arrays.sort(arr);
       }
     },
-    STRICTLY_DESCENDING {
-      @Override
-      void prepare(Integer[] arr) {
-        ASCENDING.prepare(arr);
-        Collections.reverse(Arrays.asList(arr));
-      }
-    },
     MOSTLY_ASCENDING {
       @Override
       void prepare(Integer[] arr) {
@@ -68,6 +61,22 @@ public class Benchmark {
         for (int i = 1; i < arr.length; ++i) {
           final int slot = arr[i-1] - 4 + R.nextInt(10);
           arr[i] = CACHE[slot & (CACHE.length - 1)];
+        }
+      }
+    },
+    DESCENDING {
+      @Override
+      void prepare(Integer[] arr) {
+        ASCENDING.prepare(arr);
+        Collections.reverse(Arrays.asList(arr));
+      }
+    },
+    STRICTLY_DESCENDING {
+      @Override
+      void prepare(Integer[] arr) {
+        arr[0] = CACHE[CACHE.length - 1 - R.nextInt(10)];
+        for (int i = 1; i < arr.length; ++i) {
+          arr[i] = arr[i - 1] - 1 - R.nextInt(5);
         }
       }
     };
@@ -96,7 +105,7 @@ public class Benchmark {
         }
       }
     });
-    sorters.put("QuickSorter", new ArrayQuickSorter<Integer>(array));
+    sorters.put("IntroSorter", new ArrayQuickSorter<Integer>(array));
     sorters.put("HeapSorter", new ArrayHeapSorter<Integer>(array));
     sorters.put("MergeSorter", new ArrayMergeSorter<Integer>(array));
     sorters.put("InPlaceMergeSorter", new ArrayInPlaceMergeSorter<Integer>(array));

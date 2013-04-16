@@ -48,10 +48,7 @@ public class ArrayTimSorter<T extends java.lang.Comparable<? super T>> extends T
       tmp = Arrays.copyOfRange(arr, start, start + len);
     } else {
       if (tmp.length < len) {
-        int newLen = Math.max(len, tmp.length + (tmp.length >>> 1));
-        if (newLen < 0) {
-          newLen = Integer.MAX_VALUE;
-        }
+        final int newLen = Math.max(len, tmp.length + (tmp.length >>> 1));
         @SuppressWarnings("unchecked")
         final T[] tmp = (T[]) new Comparable[newLen];
         this.tmp = tmp;

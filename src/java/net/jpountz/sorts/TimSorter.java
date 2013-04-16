@@ -73,21 +73,11 @@ public abstract class TimSorter extends Sorter {
         ++o;
       }
       reverse(runBase, o);
-      /*if (o - runBase < minRun && o < to) {
-        final int i = o;
-        o = Math.min(to, runBase + minRun);
-        binarySort(runBase, o, i);
-      }*/
     } else {
       // run must be non-descending
       while (o < to && compare(o - 1, o) <= 0) {
         ++o;
       }
-      /*if (o - runBase < minRun && o < to) {
-        final int i = o;
-        o = Math.min(to, runBase + minRun);
-        binarySort(runBase, o, i);
-      }*/ // else nothing to do, the run is already sorted
     }
     final int runHi = Math.max(o, Math.min(to, runBase + minRun));
     binarySort(runBase, runHi, o);
