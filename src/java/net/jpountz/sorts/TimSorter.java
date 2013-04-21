@@ -18,7 +18,8 @@ package net.jpountz.sorts;
 /** {@link Sorter} implementation based on the
  *  <a href="http://svn.python.org/projects/python/trunk/Objects/listsort.txt">TimSort</a>
  *  algorithm. This algorithms is especially good at sorting partially-sorted arrays.
- *  Small arrays are sorted with {@link BinarySorter}. */
+ *  This is not a strict implementation of TimSort since the merge operation only
+ *  gallops on the largest slice. Small arrays are sorted with {@link BinarySorter}. */
 public abstract class TimSorter extends AbstractTimSorter {
 
   protected TimSorter() {

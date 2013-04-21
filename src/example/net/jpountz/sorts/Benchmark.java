@@ -105,7 +105,7 @@ public class Benchmark {
     }
 
     final Map<String, Sorter> sorters = new LinkedHashMap<String, Sorter>();
-    sorters.put("Arrays.sort", new Sorter() {
+    /*sorters.put("Arrays.sort", new Sorter() {
       @Override
       protected int compare(int i, int j) { throw new UnsupportedOperationException(); }
       @Override
@@ -118,24 +118,24 @@ public class Benchmark {
           throw new Error();
         }
       }
-    });
-    sorters.put("IntroSorter", new ArrayIntroSorter<Integer>(array));
+    });*/
+    //sorters.put("IntroSorter", new ArrayIntroSorter<Integer>(array));
     sorters.put("HeapSorter", new ArrayHeapSorter<Integer>(array));
-    sorters.put("TernaryHeapSorter", new ArrayTernaryHeapSorter<Integer>(array));
-    sorters.put("MergeSorter", new ArrayMergeSorter<Integer>(array));
-    sorters.put("InPlaceMergeSorter", new ArrayInPlaceMergeSorter<Integer>(array));
+    //sorters.put("TernaryHeapSorter", new ArrayTernaryHeapSorter<Integer>(array));
+    //sorters.put("MergeSorter", new ArrayMergeSorter<Integer>(array));
+    /*sorters.put("InPlaceMergeSorter", new ArrayInPlaceMergeSorter<Integer>(array));
     sorters.put("TimSorter", new ArrayTimSorter<Integer>(array));
     sorters.put("InPlaceTimSorter", new ArrayInPlaceTimSorter<Integer>(array));
-    sorters.put("LowMemoryTimSorter", new ArrayLowMemoryTimSorter<Integer>(array, array.length / 20));
+    sorters.put("LowMemoryTimSorter", new ArrayLowMemoryTimSorter<Integer>(array, array.length / 20));*/
 
     long start = System.nanoTime();
     // JVM warming
-    while (System.nanoTime() - start < 10L * 1000 * 1000 * 1000) {
+    /*while (System.nanoTime() - start < 10L * 1000 * 1000 * 1000) {
       for (Sorter sorter : sorters.values()) {
         Order.RANDOM.prepare(array);
         sorter.sort(0, array.length);
       }
-    }
+    }*/
     for (Order order : Order.values()) {
       System.out.print('\t');
       System.out.print(order);

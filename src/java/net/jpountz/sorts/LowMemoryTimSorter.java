@@ -1,7 +1,8 @@
 package net.jpountz.sorts;
 
 /** Variant of {@link TimSorter} with a configurable number of temporary slots
- *  to use. */
+ *  to use. Even with a small number of temporary slots (1% for example), this
+ *  {@link Sorter} should be significantly faster than {@link InPlaceTimSorter}. */
 public abstract class LowMemoryTimSorter extends TimSorter {
 
   final int maxTempSlots;

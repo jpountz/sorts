@@ -15,7 +15,9 @@ package net.jpountz.sorts;
  */
 
 /** {@link Sorter} implementation based on the merge-sort algorithm that merges
- *  runs using extra memory. Small arrays are sorted with {@link InsertionSorter}. */
+ *  runs using extra memory. This implementation requires
+ *  <code>array.length</code> temporary slots. Small arrays are sorted with
+ *  {@link InsertionSorter}. */
 public abstract class MergeSorter extends Sorter {
 
   @Override

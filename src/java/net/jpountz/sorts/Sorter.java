@@ -16,7 +16,7 @@ package net.jpountz.sorts;
 
 import java.util.Comparator;
 
-/** Base class for sort algorithm implementations. */
+/** Base class for sorting algorithms implementations. */
 public abstract class Sorter {
 
   static final int THRESHOLD = 20;

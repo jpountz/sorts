@@ -22,11 +22,20 @@ public abstract class InPlaceMergeSorter extends Sorter {
   @Override
   public final void sort(int from, int to) {
     checkRange(from, to);
+    mergeSort(from, to);
+  }
+
+  void mergeSort(int from, int to) {
     if (to - from < THRESHOLD) {
       insertionSort(from, to);
     } else {
       mergeSortInPlace(from, to);
     }
+  }
+
+  @Override
+  void mergeSortInPlaceAux(int from, int to) {
+    mergeSort(from, to);
   }
 
 }
