@@ -19,6 +19,9 @@ package net.jpountz.sorts;
  *  {@link InsertionSorter}. */
 public abstract class InPlaceMergeSorter extends Sorter {
 
+  /** Create a new {@link InPlaceMergeSorter} */
+  public InPlaceMergeSorter() {}
+
   @Override
   public final void sort(int from, int to) {
     checkRange(from, to);
@@ -29,13 +32,11 @@ public abstract class InPlaceMergeSorter extends Sorter {
     if (to - from < THRESHOLD) {
       insertionSort(from, to);
     } else {
-      mergeSortInPlace(from, to);
+      final int mid = (from + to) >>> 1;
+      mergeSort(from, mid);
+      mergeSort(mid, to);
+      mergeInPlace(from, mid, to);
     }
-  }
-
-  @Override
-  void mergeSortInPlaceAux(int from, int to) {
-    mergeSort(from, to);
   }
 
 }

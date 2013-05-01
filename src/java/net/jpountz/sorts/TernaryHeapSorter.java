@@ -20,6 +20,9 @@ package net.jpountz.sorts;
  */
 public abstract class TernaryHeapSorter extends Sorter {
 
+  /** Create a new {@link TernaryHeapSorter}. */
+  public TernaryHeapSorter() {}
+
   @Override
   public void sort(int from, int to) {
     checkRange(from, to);

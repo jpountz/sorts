@@ -14,15 +14,18 @@ package net.jpountz.sorts;
  * limitations under the License.
  */
 
-import java.util.Arrays;
 
 public class ArrayTimSorter<T extends java.lang.Comparable<? super T>> extends TimSorter {
 
   private final T[] arr;
-  private T[] tmp;
+  private final T[] tmp;
 
-  public ArrayTimSorter(T[] arr) {
+  public ArrayTimSorter(T[] arr, int maxTempSlots) {
+    super(maxTempSlots);
     this.arr = arr;
+    @SuppressWarnings("unchecked")
+    final T[] tmp = (T[]) new Comparable[maxTempSlots];
+    this.tmp = tmp;
   }
 
   @Override
@@ -44,17 +47,7 @@ public class ArrayTimSorter<T extends java.lang.Comparable<? super T>> extends T
 
   @Override
   protected void save(int start, int len) {
-    if (tmp == null) {
-      tmp = Arrays.copyOfRange(arr, start, start + len);
-    } else {
-      if (tmp.length < len) {
-        final int newLen = Math.max(len, tmp.length + (tmp.length >>> 1));
-        @SuppressWarnings("unchecked")
-        final T[] tmp = (T[]) new Comparable[newLen];
-        this.tmp = tmp;
-      }
-      System.arraycopy(arr, start, tmp, 0, len);
-    }
+    System.arraycopy(arr, start, tmp, 0, len);
   }
 
   @Override

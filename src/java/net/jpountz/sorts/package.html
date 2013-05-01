@@ -1,0 +1,93 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<!--
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body>
+Sorting algorithms.
+
+<h2>Comparison</h2>
+<table border="1">
+<tr><th>{@link net.jpountz.sorts.Sorter}</th><th>Runtime</th><th>Memory</th><th>Stable</th><th>Notes</th></tr>
+<tr>
+  <td>{@link net.jpountz.sorts.BinarySorter}</td>
+  <td>O(n<sup>2</sup>)</td>
+  <td>O(1)</td>
+  <td>Yes</td>
+  <td>Only for small arrays.</td>
+</tr>
+<tr>
+  <td>{@link net.jpountz.sorts.HeapSorter}</td>
+  <td>O(n ln(n))</td>
+  <td>O(1)</td>
+  <td>No</td>
+  <td></td>
+</tr>
+<tr>
+  <td>{@link net.jpountz.sorts.InPlaceMergeSorter}</td>
+  <td>O(n ln(n))</td>
+  <td>O(1)</td>
+  <td>Yes</td>
+  <td>O(n) on sorted arrays.</td>
+</tr>
+<tr>
+  <td>{@link net.jpountz.sorts.InsertionSorter}</td>
+  <td>O(n<sup>2</sup>)</td>
+  <td>O(1)</td>
+  <td>Yes</td>
+  <td>Only for small or almost sorted arrays.</td>
+</tr>
+<tr>
+  <td>{@link net.jpountz.sorts.IntroSorter}</td>
+  <td>O(n ln(n))</td>
+  <td>O(1)</td>
+  <td>No</td>
+  <td>Outperforms other implementations on randomly-sorted data.</td>
+</tr>
+<tr>
+  <td>{@link net.jpountz.sorts.MergeSorter}</td>
+  <td>O(n ln(n))</td>
+  <td>n</td>
+  <td>Yes</td>
+  <td>O(n) on sorted arrays, several times faster than {@link net.jpountz.sorts.InPlaceMergeSorter} on randomly-sorted data.</td>
+</tr>
+<tr>
+  <td>{@link net.jpountz.sorts.TernaryHeapSorter}</td>
+  <td>O(n ln(n))</td>
+  <td>O(1)</td>
+  <td>No</td>
+  <td>Slightly faster than {@link net.jpountz.sorts.HeapSorter} on large arrays.</td>
+</tr>
+<tr>
+  <td>{@link net.jpountz.sorts.TimSorter}</td>
+  <td>O(n ln(n))</td>
+  <td>Configurable, up to n/2</td>
+  <td>Yes</td>
+  <td>O(n) on partially-sorted data, only slightly slower than {@link net.jpountz.sorts.MergeSorter} on randomly-sorted data.</td>
+</tr>
+</table>
+
+<h2>Which implementation to use?</h2>
+
+<ul>
+<li>If your data is likely partially sorted, then use {@link net.jpountz.sorts.TimSorter}.</li>
+<li>Otherwise if you don't need the sort to be stable, then use {@link net.jpountz.sorts.IntroSorter}.</li>
+<li>Otherwise if you can afford high memory usage, then use {@link net.jpountz.sorts.MergeSorter}.</li>
+<li>Otherwise use either {@link net.jpountz.sorts.TimSorter} (faster) or {@link net.jpountz.sorts.InPlaceMergeSorter} (easier to implement).</li>
+</ul>
+
+</body>
+</html>

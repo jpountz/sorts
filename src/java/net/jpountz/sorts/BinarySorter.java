@@ -20,6 +20,9 @@ package net.jpountz.sorts;
  */
 public abstract class BinarySorter extends Sorter {
 
+  /** Create a new {@link BinarySorter}. */
+  public BinarySorter() {}
+
   @Override
   public final void sort(int from, int to) {
     checkRange(from, to);

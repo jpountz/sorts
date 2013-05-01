@@ -19,6 +19,9 @@ package net.jpountz.sorts;
  */
 public abstract class HeapSorter extends Sorter {
 
+  /** Create a new {@link HeapSorter}. */
+  public HeapSorter() {}
+
   @Override
   public void sort(int from, int to) {
     checkRange(from, to);

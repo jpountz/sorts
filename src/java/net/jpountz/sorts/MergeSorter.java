@@ -20,14 +20,17 @@ package net.jpountz.sorts;
  *  {@link InsertionSorter}. */
 public abstract class MergeSorter extends Sorter {
 
+  /** Create a new {@link MergeSorter}. */
+  public MergeSorter() {}
+
   @Override
   public final void sort(int from, int to) {
     checkRange(from, to);
     requireCapacity(to - from);
-    mergeSort(from, to, from);
+    mergeSort(from, to);
   }
 
-  void mergeSort(int from, int to, int base) {
+  void mergeSort(int from, int to) {
     if (to - from < THRESHOLD) {
       insertionSort(from, to);
       return;
@@ -35,32 +38,32 @@ public abstract class MergeSorter extends Sorter {
     final int mid = (from + to) >>> 1;
     final int q1 = (from + mid) >>> 1;
     final int q3 = (mid + to) >>> 1;
-    mergeSort(from, q1, base);
-    mergeSort(q1, mid, base);
-    if (compare(q1 - 1, q1) <= 0) {
-      mergeSort(mid, q3, base);
-      mergeSort(q3, to, base);
-      if (compare(q3 - 1, q3) <= 0) {
-        if (compare(mid - 1, mid) > 0) {
-          saveAll(from, to, base);
-          merge2(from, mid, to, base);
-        } // else nothing to do
-      } else {
-        merge1(mid, q3, to, base);
-        saveAll(from, mid, base);
-        merge2(from, mid, to, base);
-      }
-    } else {
-      merge1(from, q1, mid, base);
-      mergeSort(mid, q3, base);
-      mergeSort(q3, to, base);
-      if (compare(q3 - 1, q3) <= 0) {
-        saveAll(mid, to, base);
-      } else {
-        merge1(mid, q3, to, base);
-      }
-      merge2(from, mid, to, base);
+    mergeSort(q3, to);
+    mergeSort(mid, q3);
+    mergeSort(q1, mid);
+    mergeSort(from, q1);
+
+    final boolean cq1 = compare(q1 - 1, q1) <= 0;
+    final boolean cq3 = compare(q3 - 1, q3) <= 0;
+
+    if (cq1 && cq3 && compare(mid - 1, mid) <= 0) {
+      // nothing to do
+      return;
     }
+
+    if (cq1) {
+      saveAll(from, mid, from);
+    } else {
+      merge1(from, q1, mid, from);
+    }
+
+    if (cq3) {
+      saveAll(mid, to, from);
+    } else {
+      merge1(mid, q3, to, from);
+    }
+
+    merge2(from, mid, to, from);
   }
 
   void saveAll(int from, int to, int base) {
@@ -112,10 +115,10 @@ public abstract class MergeSorter extends Sorter {
     assert dest == to;
   }
 
-  /** Save element in slot <code>i</code> in a temporary storage at offset<code>j</code>. */
+  /** Save data in slot <code>i</code> in the temporary storage at offset<code>j</code>. */
   protected abstract void save(int i, int j);
 
-  /** Restore element <code>j</code> from the temporary storage into slot <code>i</code>. */
+  /** Restore data in slot <code>i</code> of the temporary storage into slot <code>j</code>. */
   protected abstract void restore(int i, int j);
 
   /** Compare elements at offsets <code>i</code> and <code>j</code> in the temporary

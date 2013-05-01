@@ -31,7 +31,7 @@ public class TimSorterTest extends AbstractSortTest {
 
   @Override
   public Sorter newSorter(Entry[] arr) {
-    return new ArrayTimSorter<Entry>(arr);
+    return new ArrayTimSorter<Entry>(arr, randomInt(arr.length));
   }
 
   @Test
@@ -43,7 +43,7 @@ public class TimSorterTest extends AbstractSortTest {
       arr[i] = randomInt(max);
     }
     Arrays.sort(arr);
-    final TimSorter sorter = new ArrayTimSorter<Integer>(arr);
+    final TimSorter sorter = new ArrayTimSorter<Integer>(arr, arr.length);
     final int savedStart = randomInt(arr.length / 2);
     final int savedLength = randomIntBetween(1, arr.length - savedStart);
     sorter.save(savedStart, savedLength);

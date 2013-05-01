@@ -21,6 +21,9 @@ package net.jpountz.sorts;
  */
 public abstract class InsertionSorter extends Sorter {
 
+  /** Create a new {@link InsertionSorter} */
+  public InsertionSorter() {}
+
   @Override
   public final void sort(int from, int to) {
     checkRange(from, to);

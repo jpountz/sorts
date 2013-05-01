@@ -14,7 +14,7 @@ package net.jpountz.sorts;
  * limitations under the License.
  */
 
-public class ArrayInPlaceMergeSorter<T extends java.lang.Comparable<? super T>> extends InPlaceTimSorter {
+public class ArrayInPlaceMergeSorter<T extends java.lang.Comparable<? super T>> extends InPlaceMergeSorter {
 
   private final T[] arr;
 

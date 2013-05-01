@@ -43,9 +43,13 @@ public abstract class AbstractSortTest extends RandomizedTest {
   }
 
   public void test(Entry[] arr) {
-    final Entry[] sorted = Arrays.copyOf(arr, arr.length);
-    newSorter(sorted).sort(0, sorted.length);
-    assertSorted(arr, sorted);
+    final int o = randomInt(10);
+    final Entry[] toSort = new Entry[o + arr.length + randomInt(2)];
+    System.arraycopy(arr, 0, toSort, o, arr.length);
+    final Sorter sorter = newSorter(toSort);
+    assert getClass().getSimpleName().indexOf(sorter.getClass().getSimpleName().substring("Array".length())) == 0;
+    sorter.sort(o, o + arr.length);
+    assertSorted(arr, Arrays.copyOfRange(toSort, o, o + arr.length));
   }
 
   enum Strategy {

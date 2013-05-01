@@ -21,12 +21,15 @@ public abstract class Sorter {
 
   static final int THRESHOLD = 20;
 
+  /** Sole constructor, used for inheritance. */
+  protected Sorter() {}
+
   /** Compare entries found in slots <code>i</code> and <code>j</code>.
    *  The contract for the returned value is the same as
    *  {@link Comparator#compare(Object, Object)}. */
   protected abstract int compare(int i, int j);
 
-  /** Swap slots <code>i</code> and <code>j</code>. */
+  /** Swap values at slots <code>i</code> and <code>j</code>. */
   protected abstract void swap(int i, int j);
 
   /** Sort the slice which starts at <code>from</code> (inclusive) and ends at
@@ -129,10 +132,9 @@ public abstract class Sorter {
     return upper(f, to, val);
   }
 
-  void reverse(int from, int to) {
-    --to;
-    while (from < to) {
-      swap(from++, to--);
+  final void reverse(int from, int to) {
+    for (--to; from < to; ++from, --to) {
+      swap(from, to);
     }
   }
 
@@ -147,17 +149,6 @@ public abstract class Sorter {
       reverse(mid, hi);
       reverse(lo, hi);
     }
-  }
-
-  void mergeSortInPlaceAux(int from, int to) {
-    sort(from, to);
-  }
-
-  void mergeSortInPlace(int from, int to) {
-    final int mid = (from + to) >>> 1;
-    mergeSortInPlaceAux(from, mid);
-    mergeSortInPlaceAux(mid, to);
-    mergeInPlace(from, mid, to);
   }
 
   void insertionSort(int from, int to) {
@@ -299,11 +290,11 @@ public abstract class Sorter {
   }
 
   static int heapParent3(int from, int i) {
-    return (i - 1  + from) / 3;
+    return (i - 1 - from) / 3 + from;
   }
 
   static int heapLeftChild3(int from, int i) {
-    return i * 3 + 1 - from;
+    return (i - from) * 3 + 1 + from;
   }
 
 }
