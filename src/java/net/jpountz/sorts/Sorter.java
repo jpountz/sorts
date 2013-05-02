@@ -214,7 +214,7 @@ public abstract class Sorter {
   }
 
   void siftDown(int i, int from, int to) {
-    for (int leftChild = heapLeftChild(from, i); leftChild < to; leftChild = heapLeftChild(from, i)) {
+    for (int leftChild = heapChild(from, i); leftChild < to; leftChild = heapChild(from, i)) {
       final int rightChild = leftChild + 1;
       if (compare(i, leftChild) < 0) {
         if (rightChild < to && compare(leftChild, rightChild) < 0) {
@@ -234,11 +234,11 @@ public abstract class Sorter {
   }
 
   static int heapParent(int from, int i) {
-    return (i - 1  + from) >>> 1;
+    return ((i - 1 - from) >>> 1) + from;
   }
 
-  static int heapLeftChild(int from, int i) {
-    return (i << 1) + 1 - from;
+  static int heapChild(int from, int i) {
+    return ((i - from) << 1) + 1 + from;
   }
 
   void ternaryHeapSort(int from, int to) {
@@ -259,7 +259,7 @@ public abstract class Sorter {
   }
 
   void siftDown3(int i, int from, int to) {
-    for (int leftChild = heapLeftChild3(from, i); leftChild < to; leftChild = heapLeftChild3(from, i)) {
+    for (int leftChild = heapChild3(from, i); leftChild < to; leftChild = heapChild3(from, i)) {
       final int centerChild = leftChild + 1;
       final int rightChild = centerChild + 1;
       if (compare(i, leftChild) < 0) {
@@ -293,7 +293,7 @@ public abstract class Sorter {
     return (i - 1 - from) / 3 + from;
   }
 
-  static int heapLeftChild3(int from, int i) {
+  static int heapChild3(int from, int i) {
     return (i - from) * 3 + 1 + from;
   }
 
