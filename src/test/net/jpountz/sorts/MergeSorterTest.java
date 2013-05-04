@@ -27,7 +27,7 @@ public class MergeSorterTest extends AbstractSortTest {
 
   @Override
   public Sorter newSorter(Entry[] arr) {
-    return new ArrayMergeSorter<Entry>(arr);
+    return new ArrayMergeSorter<Entry>(arr, randomInt(arr.length));
   }
 
 }

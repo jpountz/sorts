@@ -17,10 +17,14 @@ package net.jpountz.sorts;
 public class ArrayMergeSorter<T extends java.lang.Comparable<? super T>> extends MergeSorter {
 
   private final T[] arr;
-  private T[] savedSlots;
+  private final T[] tmp;
 
-  public ArrayMergeSorter(T[] arr) {
+  public ArrayMergeSorter(T[] arr, int maxTempSlots) {
+    super(maxTempSlots);
     this.arr = arr;
+    @SuppressWarnings("unchecked")
+    final T[] tmp = (T[]) new Comparable[maxTempSlots];
+    this.tmp = tmp;
   }
 
   @Override
@@ -30,26 +34,22 @@ public class ArrayMergeSorter<T extends java.lang.Comparable<? super T>> extends
 
   @Override
   protected void save(int from, int to) {
-    savedSlots[to] = arr[from];
+    tmp[to] = arr[from];
   }
 
   @Override
   protected void restore(int i, int slot) {
-    arr[slot] = savedSlots[i];
+    arr[slot] = tmp[i];
   }
 
   @Override
   protected int compareSaved(int i, int j) {
-    return savedSlots[i].compareTo(savedSlots[j]);
+    return tmp[i].compareTo(tmp[j]);
   }
 
   @Override
-  protected void requireCapacity(int n) {
-    if (savedSlots == null || savedSlots.length < n) {
-      @SuppressWarnings("unchecked")
-      final T[] slots = (T[]) new java.lang.Comparable[n];
-      savedSlots = slots;
-    }
+  protected void copy(int src, int dest) {
+    arr[dest] = arr[src];
   }
 
   @Override

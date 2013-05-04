@@ -14,25 +14,43 @@ package net.jpountz.sorts;
  * limitations under the License.
  */
 
-/** {@link Sorter} implementation based on the merge-sort algorithm that merges
- *  runs using extra memory. This implementation requires
- *  <code>array.length</code> temporary slots. Small arrays are sorted with
- *  {@link InsertionSorter}. */
+/**
+ * {@link Sorter} implementation based on the merge-sort algorithm that merges
+ * runs using extra memory (on the contrary to {@link InPlaceMergeSorter}).
+ * Small arrays are sorted with {@link InsertionSorter}.
+ * <p><a name="maxTempSlots"/>The extra amount of memory to perform merges is
+ * configurable. This allows small merges to be very fast while large merges
+ * will be performed in-place (slightly slower). You can make sure that the
+ * fast merge routine will always be used by having <code>maxTempSlots</code>
+ * equal to the length of the slice of data to sort.
+ */
 public abstract class MergeSorter extends Sorter {
 
-  /** Create a new {@link MergeSorter}. */
-  public MergeSorter() {}
+  private final int maxTempSlots;
+
+  /**
+   * Create a new {@link MergeSorter}.
+   * @param maxTempSlots the <a href="#maxTempSlots">maximum amount of extra memory to run merges</a>
+   */
+  public MergeSorter(int maxTempSlots) {
+    this.maxTempSlots = maxTempSlots;
+  }
 
   @Override
   public final void sort(int from, int to) {
     checkRange(from, to);
-    requireCapacity(to - from);
     mergeSort(from, to);
   }
 
   void mergeSort(int from, int to) {
     if (to - from < THRESHOLD) {
       insertionSort(from, to);
+      return;
+    } else if (to - from > maxTempSlots) {
+      final int mid = (from + to) >>> 1;
+      mergeSort(from, mid);
+      mergeSort(mid, to);
+      mergeInPlace(from, mid, to);
       return;
     }
     final int mid = (from + to) >>> 1;
@@ -115,6 +133,44 @@ public abstract class MergeSorter extends Sorter {
     assert dest == to;
   }
 
+  @Override
+  void rotate(int lo, int mid, int hi) {
+    int len1 = mid - lo;
+    int len2 = hi - mid;
+    if (len1 == len2) {
+      while (mid < hi) {
+        swap(lo++, mid++);
+      }
+    } else if (len2 < len1 && len2 <= maxTempSlots) {
+      for (int i = 0; i < len2; ++i) {
+        save(mid + i, i);
+      }
+      for (int i = lo + len1 - 1, j = hi - 1; i >= lo; --i, --j) {
+        copy(i, j);
+      }
+      for (int i = 0, j = lo; i < len2; ++i, ++j) {
+        restore(i, j);
+      }
+    } else if (len1 <= maxTempSlots) {
+      for (int i = 0; i < len1; ++i) {
+        save(lo + i, i);
+      }
+      for (int i = mid, j = lo; i < hi; ++i, ++j) {
+        copy(i, j);
+      }
+      for (int i = 0, j = lo + len2; j < hi; ++i, ++j) {
+        restore(i, j);
+      }
+    } else {
+      reverse(lo, mid);
+      reverse(mid, hi);
+      reverse(lo, hi);
+    }
+  }
+
+  /** Copy data from slot <code>src</code> to slot <code>dest</code>. */
+  protected abstract void copy(int src, int dest);
+
   /** Save data in slot <code>i</code> in the temporary storage at offset<code>j</code>. */
   protected abstract void save(int i, int j);
 
@@ -124,8 +180,5 @@ public abstract class MergeSorter extends Sorter {
   /** Compare elements at offsets <code>i</code> and <code>j</code> in the temporary
    *  storage similarly to {@link #compare(int, int)}. */
   protected abstract int compareSaved(int i, int j);
-
-  /** Make sure that the temporary storage contains at least <code>n</code> entries. */
-  protected abstract void requireCapacity(int n);
 
 }
