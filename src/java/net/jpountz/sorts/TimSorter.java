@@ -209,7 +209,7 @@ public abstract class TimSorter extends Sorter {
         swap(lo++, mid++);
       }
     } else if (len2 < len1 && len2 <= maxTempSlots) {
-      save(mid, len2);
+      saveAll(mid, len2);
       for (int i = lo + len1 - 1, j = hi - 1; i >= lo; --i, --j) {
         copy(i, j);
       }
@@ -217,7 +217,7 @@ public abstract class TimSorter extends Sorter {
         restore(i, j);
       }
     } else if (len1 <= maxTempSlots) {
-      save(lo, len1);
+      saveAll(lo, len1);
       for (int i = mid, j = lo; i < hi; ++i, ++j) {
         copy(i, j);
       }
@@ -234,7 +234,7 @@ public abstract class TimSorter extends Sorter {
   void mergeLo(int lo, int mid, int hi) {
     assert compare(lo, mid) > 0;
     int len1 = mid - lo;
-    save(lo, len1);
+    saveAll(lo, len1);
     copy(mid, lo);
     int i = 0, j = mid + 1, dest = lo + 1;
     outer: for (;;) {
@@ -265,7 +265,7 @@ public abstract class TimSorter extends Sorter {
   void mergeHi(int lo, int mid, int hi) {
     assert compare(mid - 1, hi - 1) > 0;
     int len2 = hi - mid;
-    save(mid, len2);
+    saveAll(mid, len2);
     copy(mid - 1, hi - 1);
     int i = mid - 2, j = len2 - 1, dest = hi - 2;
     outer: for (;;) {
@@ -356,7 +356,7 @@ public abstract class TimSorter extends Sorter {
 
   /** Save all elements between slots <code>i</code> and <code>i+len</code>
    *  into the temporary storage. */
-  protected abstract void save(int i, int len);
+  protected abstract void saveAll(int i, int len);
 
   /** Restore element <code>j</code> from the temporary storage into slot <code>i</code>. */
   protected abstract void restore(int i, int j);

@@ -46,7 +46,7 @@ public class TimSorterTest extends AbstractSortTest {
     final TimSorter sorter = new ArrayTimSorter<Integer>(arr, arr.length);
     final int savedStart = randomInt(arr.length / 2);
     final int savedLength = randomIntBetween(1, arr.length - savedStart);
-    sorter.save(savedStart, savedLength);
+    sorter.saveAll(savedStart, savedLength);
     final int savedOff = randomInt(savedLength - 1);
     final int off = savedStart + savedOff;
     final int from = randomInt(arr.length / 2);

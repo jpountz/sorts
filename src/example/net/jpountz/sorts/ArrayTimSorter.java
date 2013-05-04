@@ -44,7 +44,7 @@ public class ArrayTimSorter<T extends java.lang.Comparable<? super T>> extends T
   }
 
   @Override
-  protected void save(int start, int len) {
+  protected void saveAll(int start, int len) {
     System.arraycopy(arr, start, tmp, 0, len);
   }
 
