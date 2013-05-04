@@ -43,7 +43,7 @@ public abstract class AbstractSortTest extends RandomizedTest {
   }
 
   public void test(Entry[] arr) {
-    final int o = randomInt(10);
+    final int o = randomInt(1000);
     final Entry[] toSort = new Entry[o + arr.length + randomInt(2)];
     System.arraycopy(arr, 0, toSort, o, arr.length);
     final Sorter sorter = newSorter(toSort);

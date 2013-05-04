@@ -296,8 +296,8 @@ public abstract class TimSorter extends Sorter {
   int lowerSaved(int from, int to, int val) {
     int len = to - from;
     while (len > 0) {
-      int half = len >>> 1,
-        mid = from + half;
+      final int half = len >>> 1;
+      final int mid = from + half;
       if (compareSaved(val, mid) > 0) {
         from = mid + 1;
         len = len - half -1;
@@ -311,8 +311,8 @@ public abstract class TimSorter extends Sorter {
   int upperSaved(int from, int to, int val) {
     int len = to - from;
     while (len > 0) {
-      int half = len >>> 1,
-        mid = from + half;
+      final int half = len >>> 1;
+      final int mid = from + half;
       if (compareSaved(val, mid) < 0) {
         len = half;
       } else {

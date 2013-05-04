@@ -77,8 +77,8 @@ public abstract class Sorter {
   int lower(int from, int to, int val) {
     int len = to - from;
     while (len > 0) {
-      final int half = len >>> 1,
-        mid = from + half;
+      final int half = len >>> 1;
+      final int mid = from + half;
       if (compare(mid, val) < 0) {
         from = mid + 1;
         len = len - half -1;
@@ -92,8 +92,8 @@ public abstract class Sorter {
   int upper(int from, int to, int val) {
     int len = to - from;
     while (len > 0) {
-      final int half = len >>> 1,
-        mid = from + half;
+      final int half = len >>> 1;
+      final int mid = from + half;
       if (compare(val, mid) < 0) {
         len = half;
       } else {
@@ -295,6 +295,57 @@ public abstract class Sorter {
 
   static int heapChild3(int from, int i) {
     return (i - from) * 3 + 1 + from;
+  }
+
+  /* Helper methods */
+
+  /** Swap elements at slots <code>i</code> and <code>j</code> in <code>arr</code>. */
+  protected static <T> void  swap(T[] arr, int i, int j) {
+    final T tmp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = tmp;
+  }
+
+  /** Swap elements at slots <code>i</code> and <code>j</code> in <code>arr</code>. */
+  protected static void  swap(long[] arr, int i, int j) {
+    final long tmp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = tmp;
+  }
+
+  /** Swap elements at slots <code>i</code> and <code>j</code> in <code>arr</code>. */
+  protected static void  swap(int[] arr, int i, int j) {
+    final int tmp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = tmp;
+  }
+
+  /** Swap elements at slots <code>i</code> and <code>j</code> in <code>arr</code>. */
+  protected static void  swap(double[] arr, int i, int j) {
+    final double tmp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = tmp;
+  }
+
+  /** Swap elements at slots <code>i</code> and <code>j</code> in <code>arr</code>. */
+  protected static void  swap(float[] arr, int i, int j) {
+    final float tmp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = tmp;
+  }
+
+  /** Swap elements at slots <code>i</code> and <code>j</code> in <code>arr</code>. */
+  protected static void  swap(short[] arr, int i, int j) {
+    final short tmp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = tmp;
+  }
+
+  /** Swap elements at slots <code>i</code> and <code>j</code> in <code>arr</code>. */
+  protected static void  swap(byte[] arr, int i, int j) {
+    final byte tmp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = tmp;
   }
 
 }

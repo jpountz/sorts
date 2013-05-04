@@ -35,9 +35,7 @@ public class ArrayTimSorter<T extends java.lang.Comparable<? super T>> extends T
 
   @Override
   protected void swap(int i, int j) {
-    final T tmp = arr[i];
-    arr[i] = arr[j];
-    arr[j] = tmp;
+    swap(arr, i, j);
   }
 
   @Override
